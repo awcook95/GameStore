@@ -4,6 +4,7 @@ from flask_sqlalchemy import SQLAlchemy
 app = Flask(__name__)
 app.config['SQLALCHEMY_DATABASE_URI'] = 'postgresql://postgres:mangosteen@localhost/GameStore'
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
+app.debug = True
 db = SQLAlchemy(app)
 
 class Users(db.Model):
@@ -53,21 +54,38 @@ class Reviews(db.Model):
 
 
 @app.route('/')
-def index():
-    return render_template('review.html')
+def login():
+    return render_template('login.html')
 
-@app.route('/submit', methods=['POST'])
-def submit():
+@app.route('/try_login', methods=['POST'])
+def tryLogin():
+    if request.method == 'POST':
+        uname = request.form['username']
+        pword = request.form['password']
+        if uname == '' or pword == '':
+            return render_template('login.html', message = "Please enter username and password")
+        return render_template('userMenu.html')
+
+@app.route('/user_menu', methods=['POST'])
+def userMenu():
+    return render_template('userMenu.html')
+
+@app.route('/create_review', methods=['POST'])
+def createReview():
+    return render_template('createReview.html')
+
+@app.route('/submit_review', methods=['POST'])
+def submit_review():
     if request.method == 'POST':
         title = request.form['title']
         score = request.form['score']
         body = request.form['body']
         if title == '' or body == '':
-            return render_template('review.html', message='Please enter required fields')
-        data = Reviews(title, score, body)
-        db.session.add(data)
+            return render_template('createReview.html', message='Please enter required fields')
+        review = Reviews(title, score, body)
+        db.session.add(review)
         db.session.commit()
-        return render_template('success.html')
+        return render_template('review_success.html')
 
 if __name__ == "__main__":
     app.run()

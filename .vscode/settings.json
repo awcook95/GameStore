@@ -2,5 +2,5 @@
     "python.pythonPath": "C:\\Users\\Alex\\.virtualenvs\\GameStore-TCe2EQ_q\\Scripts\\python.exe",
     "python.linting.pylintEnabled": false,
     "python.linting.flake8Enabled": true,
-    "python.linting.enabled": true
+    "python.linting.enabled": false
 }
