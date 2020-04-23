@@ -1,0 +1,32 @@
+<!doctype html>
+<html>
+    <head>
+        <meta charset="UTF-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <meta http-equiv="X-UA-Compatible" content="ie=edge" />
+        <link rel="stylesheet" href="../static/style.css" />
+        <title>Find A Store</title>
+    </head>
+    <body>
+        <h1>Find A Store</h1>
+        <form action="/user_menu" method="POST">
+            <button type="submit">Return to main menu</button>
+        </form>
+        <form action="/find_store" method="POST">
+            <button type="text" name="option" value="all">Show all locations</button>
+        </form>
+        <form action="/find_store" method="POST">
+            <h3>Enter your state</h3>
+            <input
+                type="text"
+                name="option"
+                placeholder="State: e.g FL, CA, NY"
+            />
+        </form>
+        {% if stores %}
+            {% for store in stores %}
+            <li>{{store.address}}</li>
+            {% endfor %}
+        {% endif %}
+    </body>
+</html>

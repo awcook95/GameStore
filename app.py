@@ -3,12 +3,11 @@ from flask_sqlalchemy import SQLAlchemy
 from sqlalchemy.orm import sessionmaker
 
 app = Flask(__name__)
-#app.config['SQLALCHEMY_DATABASE_URI'] = 'postgresql://postgres:mangosteen@localhost/GameStore'
-app.config['SQLALCHEMY_DATABASE_URI'] = 'postgresql://postgres:thompson@localhost:5432/New'
+app.config['SQLALCHEMY_DATABASE_URI'] = 'postgresql://postgres:mangosteen@localhost/GameStore'
+#app.config['SQLALCHEMY_DATABASE_URI'] = 'postgresql://postgres:thompson@localhost:5432/New'
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 app.debug = True
 db = SQLAlchemy(app)
-
 
 
 class Users(db.Model):
@@ -18,7 +17,6 @@ class Users(db.Model):
     pword = db.Column(db.String(100))
     name = db.Column(db.String(50))
     email = db.Column(db.String(100), unique=True)
-    #id = synonym('uid')
     
     def __init__(self, uname, pword, name, email):
         self.uname = uname
@@ -52,7 +50,6 @@ class Employees(db.Model):
     pword = db.Column(db.String(100))
     name = db.Column(db.String(50))
     rank = db.Column(db.String(1))
-    #id = synonym('eid')
     
     def __init__(self, uname, pword, name, rank):
         self.uname = uname
@@ -151,6 +148,19 @@ def tryLogin():
 def userMenu():
     return render_template('userMenu.html')
 
+@app.route('/find_store', methods=['POST'])
+def findStore():
+    option = request.form['option']
+    if option == '':
+        return render_template('findStore.html')
+    elif option == 'all':
+        stores = Store.query.all()
+        return render_template('findStore.html', stores=stores)
+    else:
+        state = option
+        stores = Store.query.filter(Store.address.match(f'%{state}%')).all()
+        return render_template('findStore.html', stores=stores)
+
 @app.route('/create_review', methods=['POST'])
 def createReview():
     return render_template('createReview.html')
@@ -161,8 +171,8 @@ def submit_review():
         title = request.form['title']
         score = request.form['score']
         body = request.form['body']
-        uid = 3;
-        gid = 3;
+        uid = 3
+        gid = 3
         if title == '' or body == '':
             return render_template('createReview.html', message='Please enter required fields')
         review = Reviews(uid, gid, title, score, body)
