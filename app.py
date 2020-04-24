@@ -3,8 +3,8 @@ from flask_sqlalchemy import SQLAlchemy
 from sqlalchemy.orm import sessionmaker
 
 app = Flask(__name__)
-app.config['SQLALCHEMY_DATABASE_URI'] = 'postgresql://postgres:mangosteen@localhost/GameStore'
-#app.config['SQLALCHEMY_DATABASE_URI'] = 'postgresql://postgres:thompson@localhost:5432/New'
+#app.config['SQLALCHEMY_DATABASE_URI'] = 'postgresql://postgres:mangosteen@localhost/GameStore'
+app.config['SQLALCHEMY_DATABASE_URI'] = 'postgresql://postgres:thompson@localhost:5432/New'
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 app.debug = True
 db = SQLAlchemy(app)
@@ -156,6 +156,18 @@ def userMenu():
 
 
 
+@app.route('/find_store', methods=['POST'])
+def findStore():
+    option = request.form['option']
+    if option == '':
+        return render_template('findStore.html')
+    elif option == 'all':
+        stores = Store.query.all()
+        return render_template('findStore.html', stores=stores)
+    else:
+        state = option
+        stores = Store.query.filter(Store.address.match(f'%{state}%')).all()
+        return render_template('findStore.html', stores=stores)
 
 
 
