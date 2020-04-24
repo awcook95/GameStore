@@ -17,13 +17,13 @@ class Users(db.Model):
     pword = db.Column(db.String(100))
     name = db.Column(db.String(50))
     email = db.Column(db.String(100), unique=True)
-    
+
     def __init__(self, uname, pword, name, email):
         self.uname = uname
         self.pword = pword
         self.name = name
         self.email = email
-    
+
     def __repr__(self):
         return '<User %r>' % self.username
 
@@ -35,7 +35,7 @@ class Games(db.Model):
     publisher = db.Column(db.String(50))
     platform = db.Column(db.String(50))
     price = db.Column(db.Float)
-    
+
     def __init__(self, title, publisher, platform, price):
         self.title = title
         self.platform = platform
@@ -50,7 +50,7 @@ class Employees(db.Model):
     pword = db.Column(db.String(100))
     name = db.Column(db.String(50))
     rank = db.Column(db.String(1))
-    
+
     def __init__(self, uname, pword, name, rank):
         self.uname = uname
         self.pword = pword
@@ -62,7 +62,7 @@ class Store(db.Model):
     __tablename__ = 'store'
     sid = db.Column(db.Integer, primary_key=True)
     address = db.Column(db.String(100))
-    
+
     def __init__(self, address):
         self.address = address
 
@@ -76,7 +76,7 @@ class Reviews(db.Model):
     title = db.Column(db.String(50))
     score = db.Column(db.Integer)
     body = db.Column(db.Text())
-    
+
     def __init__(self, uid, gid, title, score, body):
         self.uid = uid
         self.gid = gid
@@ -90,7 +90,7 @@ class Stock(db.Model):
     gid =  db.Column(db.Integer)
     sid = db.Column(db.Integer)
     amount = db.Column(db.Integer)
-    
+
     def __init__(self, gid, sid, amount):
         self.gid = gid
         self.sid = sid
@@ -103,7 +103,7 @@ class WorksAt(db.Model):
     wid = db.Column(db.Integer, primary_key=True)
     eid =  db.Column(db.Integer)
     sid = db.Column(db.Integer)
-    
+
     def __init__(self, eid, sid):
         self.eid = gid
         self.sid = sid
@@ -114,7 +114,7 @@ class Purchase(db.Model):
     uid = db.Column(db.Integer)
     gid = db.Column(db.Integer)
     sid = db.Column(db.Integer)
-    
+
     def __init__(self, uid, gid, sid):
         self.uid = uid
         self.gid = gid
@@ -129,37 +129,146 @@ class Purchase(db.Model):
 def login():
     return render_template('login.html')
 
-@app.route('/try_login', methods=['GET', 'POST'])
+@app.route('/try_login', methods=[ 'POST'])
 def tryLogin():
     if request.method == 'POST':
         uname = request.form['username']
         pword = request.form['password']
         if uname == '' or pword == '':
             return render_template('login.html', message = "Please enter username and password")
-        
+
         userLogin = Users.query.all()
         for user in userLogin:
-             if (uname == user.uname):
+             if (uname == user.uname and pword == user.pword):
                  return render_template('userMenu.html')
-        
+
+        employeeLogin = Employees.query.all()
+        for emp in employeeLogin:
+            if(uname == emp.uname and pword == emp.pword):
+                return render_template('userMenu.html') #edit late to be empMenu
+
         return render_template('login.html', message = "Please enter VALID username and password")
 
 @app.route('/user_menu', methods=['POST'])
 def userMenu():
     return render_template('userMenu.html')
 
-@app.route('/find_store', methods=['POST'])
-def findStore():
-    option = request.form['option']
-    if option == '':
-        return render_template('findStore.html')
-    elif option == 'all':
-        stores = Store.query.all()
-        return render_template('findStore.html', stores=stores)
-    else:
-        state = option
-        stores = Store.query.filter(Store.address.match(f'%{state}%')).all()
-        return render_template('findStore.html', stores=stores)
+
+
+
+
+
+
+
+
+
+@app.route('/game_search', methods= ['POST'])
+def gameSearch():
+    return render_template('gameSearch.html')
+
+@app.route('/game_search/by_title', methods= ['POST'])
+def filterByTitle():
+    if request.method == 'POST':
+        title = request.form['title']
+        ListOfGames = []
+        gameList = Games.query.all()
+        for game in gameList:
+            lowerAttribute = game.title.lower()
+            lowerAttribute = lowerAttribute.strip()
+            lowerAttribute = lowerAttribute.replace(" ","")
+
+
+            lowerUserInput = title.lower()
+            lowerUserInput = lowerUserInput.strip()
+            lowerUserInput = lowerUserInput.replace(" ","")
+            if(lowerUserInput in lowerAttribute):
+                ListOfGames.append(game)
+
+        size = len(ListOfGames)
+
+        stringy = []
+
+        for game in ListOfGames:
+            stringy.append(game.title)
+            print(game.title)
+
+
+        if(size > 0):
+            return render_template("gameSearchResults.html", listy = ListOfGames)
+        else:
+            return render_template('gameSearch.html', message = 'No title By that name Found')
+
+
+
+
+
+@app.route('/game_search/by_publisher', methods= ['POST'])
+def filterByPublisher():
+    if request.method == 'POST':
+        publisher = request.form['publisher']
+        ListOfGames = []
+        publisherList = Games.query.all()
+        for game in publisherList:
+            lowerAttribute = game.publisher.lower()
+            lowerAttribute = lowerAttribute.strip()
+            lowerAttribute = lowerAttribute.replace(" ","")
+
+
+            lowerUserInput = publisher.lower()
+            lowerUserInput = lowerUserInput.strip()
+            lowerUserInput = lowerUserInput.replace(" ","")
+            if(lowerUserInput in lowerAttribute):
+                ListOfGames.append(game)
+
+
+
+        if(len(ListOfGames) > 0):
+            return render_template("gameSearchResults.html", listy = ListOfGames)
+        else:
+            return render_template('gameSearch.html', message = 'No publisher By that name Found')
+
+@app.route('/game_search/by_platform', methods= ['POST'])
+def filterByPlatform():
+    if request.method == 'POST':
+        platform = request.form['platform']
+        gameList = Games.query.all()
+        ListOfGames = []
+        for game in gameList:
+            if(game.platform == platform):
+                ListOfGames.append(game)
+
+        size = len(ListOfGames)
+        if(size > 0):
+            return render_template("gameSearchResults.html", listy = ListOfGames)
+        else:
+            return render_template('gameSearch.html', message = 'No games By that platform Found')
+
+
+@app.route('/game_search/by_price', methods= ['POST'])
+def filterByPrice():
+    if request.method == 'POST':
+        price = request.form['pricefilter']
+        pricenum = float(price)
+        gameList = Games.query.all()
+        ListOfGames = []
+        for game in gameList:
+            if(game.price < pricenum ):
+                ListOfGames.append(game)
+
+        size = len(ListOfGames)
+        if(size > 0):
+            return render_template("gameSearchResults.html", listy = ListOfGames)
+        else:
+            return render_template('gameSearch.html', message = 'No games under that Price were found')
+
+
+
+
+
+
+
+
+
 
 @app.route('/create_review', methods=['POST'])
 def createReview():
@@ -171,10 +280,19 @@ def submit_review():
         title = request.form['title']
         score = request.form['score']
         body = request.form['body']
-        uid = 3
-        gid = 3
+        uid = 3;
+        gid = 16;
         if title == '' or body == '':
             return render_template('createReview.html', message='Please enter required fields')
+
+        confirmTitle = 'invalid'
+        gameTitle = Games.query.all()
+        for game in gameTitle:
+            if(game.title == title):
+                confirmTitle = title
+                gid = game.gid
+        if(confirmTitle == 'invalid'):
+                return render_template('createReview.html', message= 'Game does not exist in our records')
         review = Reviews(uid, gid, title, score, body)
         db.session.add(review)
         db.session.commit()
@@ -182,4 +300,3 @@ def submit_review():
 
 if __name__ == "__main__":
     app.run()
-

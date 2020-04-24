@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta http-equiv="X-UA-Compatible" content="ie=edge" />
+    <link rel="stylesheet" href="../static/style.css" />
+    <title>Please Enter Your Review</title>
+  </head>
+  <body>
+    <div class="container">
+      {% if message %}
+      <p class="message">{{ message | safe }}</p>
+      {% endif %}
+      <form action="/game_search/by_title" method="POST">
+        <div class="form-group">
+          <h3>Search By Title</h3>
+          <input
+            type="text"
+            name="title"
+            placeholder="Title.."
+          />
+        </div>
+        <input type="submit" value="Submit" class="btn" />
+        </form>
+        <form action="/game_search/by_publisher" method="POST">
+        <div class="form-group">
+          <h3>Search By Publisher</h3>
+          <input
+            type="text"
+            name="publisher"
+            placeholder="Publisher.."
+          />
+          <input type="submit" value="Submit" class="btn" />
+        </div>
+        </form>
+        <form action="/game_search/by_platform" method="POST">
+        <div class="form-group">
+          <h3>Select the Platform</h3>
+          <select id = "Platform" name = "platform">
+            <option type = "text"  value = "PS4"> PS4 </option>
+            <option type = "text"  value = "Xbox"> Xbox </option>
+            <option type = "text"  value = "Switch"> Switch </option>
+        </div>
+          <input type="submit" value="Submit" class="btn" />
+
+          </form>
+          <form action="/game_search/by_price" method="POST">
+          <div class="form-group">
+            <h3>Filter By Price</h3>
+            <select id = "PriceTier" name = "pricefilter">
+              <option type = "text"  value = "20"> Games $20 and less </option>
+              <option type = "text"  value = "40"> Games $40 and less </option>
+              <option type = "text"  value = "60"> Games $60 and less </option>
+          </div>
+            <input type="submit" value="Submit" class="btn" />
+
+            </form>
+
+    </body>
+
+
+
+</html>
