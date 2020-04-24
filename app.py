@@ -167,7 +167,15 @@ def filterByTitle():
         ListOfGames = []
         gameList = Games.query.all()
         for game in gameList:
-            if(game.title == title):
+            lowerAttribute = game.title.lower()
+            lowerAttribute = lowerAttribute.strip()
+            lowerAttribute = lowerAttribute.replace(" ","")
+
+
+            lowerUserInput = title.lower()
+            lowerUserInput = lowerUserInput.strip()
+            lowerUserInput = lowerUserInput.replace(" ","")
+            if(lowerUserInput in lowerAttribute):
                 ListOfGames.append(game)
 
         size = len(ListOfGames)
@@ -180,7 +188,7 @@ def filterByTitle():
 
 
         if(size > 0):
-            return render_template("titleSearchList.html", listy = ListOfGames)
+            return render_template("gameSearchResults.html", listy = ListOfGames)
         else:
             return render_template('gameSearch.html', message = 'No title By that name Found')
 
@@ -195,10 +203,21 @@ def filterByPublisher():
         ListOfGames = []
         publisherList = Games.query.all()
         for game in publisherList:
-            if(game.publisher == publisher):
+            lowerAttribute = game.publisher.lower()
+            lowerAttribute = lowerAttribute.strip()
+            lowerAttribute = lowerAttribute.replace(" ","")
+
+
+            lowerUserInput = publisher.lower()
+            lowerUserInput = lowerUserInput.strip()
+            lowerUserInput = lowerUserInput.replace(" ","")
+            if(lowerUserInput in lowerAttribute):
                 ListOfGames.append(game)
+
+
+
         if(len(ListOfGames) > 0):
-            return render_template("publisherSearchList.html")
+            return render_template("gameSearchResults.html", listy = ListOfGames)
         else:
             return render_template('gameSearch.html', message = 'No publisher By that name Found')
 
@@ -214,7 +233,7 @@ def filterByPlatform():
 
         size = len(ListOfGames)
         if(size > 0):
-            return render_template("platformSearchList.html")
+            return render_template("gameSearchResults.html", listy = ListOfGames)
         else:
             return render_template('gameSearch.html', message = 'No games By that platform Found')
 
@@ -232,7 +251,7 @@ def filterByPrice():
 
         size = len(ListOfGames)
         if(size > 0):
-            return render_template("priceSearchList.html")
+            return render_template("gameSearchResults.html", listy = ListOfGames)
         else:
             return render_template('gameSearch.html', message = 'No games under that Price were found')
 
