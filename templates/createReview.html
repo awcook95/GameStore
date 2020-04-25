@@ -8,10 +8,10 @@
     <title>Please Enter Your Review</title>
   </head>
   <body>
-    <form action="/user_menu" method="POST">
-      <button type="submit">Back</button>
-    </form>
     <div class="container">
+      <form action="/user_menu" method="POST">
+        <button type="submit">Back</button>
+      </form>
       {% if message %}
       <p class="message">{{ message | safe }}</p>
       {% endif %}
