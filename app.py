@@ -178,6 +178,23 @@ def findStore():
 def gameSearch():
     return render_template('gameSearch.html')
 
+@app.route('/game_search/all', methods= ['POST'])
+def filterByAll():
+    if request.method == 'POST':
+        gameList = Games.query.all()
+        ListOfGames = []
+        for game in gameList:
+                ListOfGames.append(game)
+
+        size = len(ListOfGames)
+        if(size > 0):
+            return render_template("gameSearchResults.html", listy = ListOfGames)
+        else:
+            return render_template('gameSearch.html', message = 'No games By that platform Found')
+
+
+
+
 @app.route('/game_search/by_title', methods= ['POST'])
 def filterByTitle():
     if request.method == 'POST':
