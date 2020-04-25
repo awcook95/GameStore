@@ -143,12 +143,14 @@ def tryLogin():
         for user in userLogin:
              if (uname == user.uname and pword == user.pword):
                  session["user"] = uname
+                 session["id"] = user.uid
                  return render_template('userMenu.html', username = session["user"])
 
         employeeLogin = Employees.query.all()
         for emp in employeeLogin:
             if(uname == emp.uname and pword == emp.pword):
                 session["user"] = uname
+                session["id"] = emp.eid
                 return render_template('userMenu.html', username = session["user"]) #edit late to be empMenu
 
         return render_template('login.html', message = "Please enter VALID username and password")
@@ -158,6 +160,7 @@ def tryLogin():
 def logout():
 
     session["user"] = ""
+    session["id"] = ""
     return render_template('login.html', message = "succesfully logged out")
 
 
@@ -324,8 +327,7 @@ def submit_review():
         title = request.form['title']
         score = request.form['score']
         body = request.form['body']
-        uid = 3;
-        gid = 16;
+        uid = session["id"];
         if title == '' or body == '':
             return render_template('createReview.html', message='Please enter required fields')
 
