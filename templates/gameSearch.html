@@ -8,10 +8,21 @@
     <title>Please Enter Your Review</title>
   </head>
   <body>
+
+
     <div class="container">
       {% if message %}
       <p class="message">{{ message | safe }}</p>
       {% endif %}
+
+      <form action="/user_menu" method="POST">
+          <button type="submit">Return to main menu</button>
+      </form>
+
+      <form action="/game_search/all" method="POST">
+          <button type="submit">List All Games</button>
+      </form>
+
       <form action="/game_search/by_title" method="POST">
         <div class="form-group">
           <h3>Search By Title</h3>
