@@ -153,7 +153,12 @@ def tryLogin():
                 session["user"] = uname
                 session["id"] = emp.eid
                 session["rank"] = emp.rank
-                return render_template('empMenu.html', username = session["user"]) #edit late to be empMenu
+
+                store = WorksAt.query.filter(WorksAt.eid == emp.eid).first()
+                session["sid"] = store.sid
+
+
+                return render_template('empMenu.html', username = session["user"], sid = session["sid"]) #edit late to be empMenu
 
         return render_template('login.html', message = "Please enter VALID username and password")
 
@@ -340,24 +345,28 @@ def viewOrders():
     purchaseInfo = []
 
 
-
-
+    totalPrice = 0
+    count = 0
     for myTransaction in listOfPurchases:
         gameList = Games.query.all()
         for game in gameList:
             if(game.gid == myTransaction.gid):
                 currentTitle = game.title
                 currentPrice = game.price
+                totalPrice+= currentPrice
+                count+=1
                 Stores = Store.query.all()
                 for place in Stores:
                     if(place.sid == myTransaction.sid):
                         currentAddress = place.address
 
+
+
         aPurchase = namedtuple("aPurchase", "title price address")
         thispurchaseInfo = aPurchase(currentTitle, currentPrice, currentAddress)
         purchaseInfo.append(thispurchaseInfo)
 
-    return render_template("userOrders.html", listy = purchaseInfo)
+    return render_template("userOrders.html", listy = purchaseInfo, count = count, total = totalPrice)
 
 
 

@@ -10,6 +10,8 @@
 <body>
 
 
+
+
   <div class="container">
     {% if message %}
     <p class="message">{{ message | safe }}</p>
@@ -39,5 +41,13 @@
       </tr>
     {% endfor %}
   </div>
+<h3>Number of Games Owned: {{count|safe}}</h3>
+
+<h3>Money Spent to Date: {{total|safe}}</h3>
+
+<form action="/user_menu" method="POST">
+    <button type="submit">Return to main menu</button>
+</form>
+
 </body>
 </html>
