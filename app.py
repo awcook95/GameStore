@@ -3,7 +3,11 @@ from flask_sqlalchemy import SQLAlchemy
 from sqlalchemy.orm import sessionmaker
 from collections import namedtuple
 
+from source.gameSearch import gameSearch
+
 app = Flask(__name__)
+app.register_blueprint(gameSearch, url_prefix="/game_search")
+
 app.config['SQLALCHEMY_DATABASE_URI'] = 'postgresql://postgres:mangosteen@localhost/GameStore'
 #app.config['SQLALCHEMY_DATABASE_URI'] = 'postgresql://postgres:thompson@localhost:5432/New'
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
@@ -26,9 +30,6 @@ class Users(db.Model):
         self.pword = pword
         self.name = name
         self.email = email
-
-    def __repr__(self):
-        return '<User %r>' % self.username
 
 
 class Games(db.Model):
@@ -126,8 +127,6 @@ class Purchase(db.Model): #need to Add datePurchased
 
 
 
-
-
 @app.route('/')
 def login():
     return render_template('login.html')
@@ -200,121 +199,6 @@ def findStore():
 
 
 
-@app.route('/game_search', methods= ['POST'])
-def gameSearch():
-    return render_template('gameSearch.html')
-
-@app.route('/game_search/all', methods= ['POST'])
-def filterByAll():
-    if request.method == 'POST':
-        gameList = Games.query.all()
-        ListOfGames = []
-        for game in gameList:
-                ListOfGames.append(game)
-
-        size = len(ListOfGames)
-        if(size > 0):
-            return render_template("gameSearchResults.html", listy = ListOfGames)
-        else:
-            return render_template('gameSearch.html', message = 'No games By that platform Found')
-
-
-
-
-@app.route('/game_search/by_title', methods= ['POST'])
-def filterByTitle():
-    if request.method == 'POST':
-        title = request.form['title']
-        ListOfGames = []
-        gameList = Games.query.all()
-        for game in gameList:
-            lowerAttribute = game.title.lower()
-            lowerAttribute = lowerAttribute.strip()
-            lowerAttribute = lowerAttribute.replace(" ","")
-
-
-            lowerUserInput = title.lower()
-            lowerUserInput = lowerUserInput.strip()
-            lowerUserInput = lowerUserInput.replace(" ","")
-            if(lowerUserInput in lowerAttribute):
-                ListOfGames.append(game)
-
-        size = len(ListOfGames)
-
-        stringy = []
-
-        for game in ListOfGames:
-            stringy.append(game.title)
-            print(game.title)
-
-
-        if(size > 0):
-            return render_template("gameSearchResults.html", listy = ListOfGames)
-        else:
-            return render_template('gameSearch.html', message = 'No title By that name Found')
-
-
-
-
-
-@app.route('/game_search/by_publisher', methods= ['POST'])
-def filterByPublisher():
-    if request.method == 'POST':
-        publisher = request.form['publisher']
-        ListOfGames = []
-        publisherList = Games.query.all()
-        for game in publisherList:
-            lowerAttribute = game.publisher.lower()
-            lowerAttribute = lowerAttribute.strip()
-            lowerAttribute = lowerAttribute.replace(" ","")
-
-
-            lowerUserInput = publisher.lower()
-            lowerUserInput = lowerUserInput.strip()
-            lowerUserInput = lowerUserInput.replace(" ","")
-            if(lowerUserInput in lowerAttribute):
-                ListOfGames.append(game)
-
-
-
-        if(len(ListOfGames) > 0):
-            return render_template("gameSearchResults.html", listy = ListOfGames)
-        else:
-            return render_template('gameSearch.html', message = 'No publisher By that name Found')
-
-@app.route('/game_search/by_platform', methods= ['POST'])
-def filterByPlatform():
-    if request.method == 'POST':
-        platform = request.form['platform']
-        gameList = Games.query.all()
-        ListOfGames = []
-        for game in gameList:
-            if(game.platform.lower() == platform.lower()):
-                ListOfGames.append(game)
-
-        size = len(ListOfGames)
-        if(size > 0):
-            return render_template("gameSearchResults.html", listy = ListOfGames)
-        else:
-            return render_template('gameSearch.html', message = 'No games By that platform Found')
-
-
-@app.route('/game_search/by_price', methods= ['POST'])
-def filterByPrice():
-    if request.method == 'POST':
-        price = request.form['pricefilter']
-        pricenum = float(price)
-        gameList = Games.query.all()
-        ListOfGames = []
-        for game in gameList:
-            if(game.price < pricenum ):
-                ListOfGames.append(game)
-
-        size = len(ListOfGames)
-        if(size > 0):
-            return render_template("gameSearchResults.html", listy = ListOfGames)
-        else:
-            return render_template('gameSearch.html', message = 'No games under that Price were found')
 
 
 @app.route('/purchase_game', methods = ['POST'])
@@ -382,7 +266,7 @@ def submit_review():
         title = request.form['title']
         score = request.form['score']
         body = request.form['body']
-        uid = session["id"];
+        uid = session["id"]
         if title == '' or body == '':
             return render_template('createReview.html', message='Please enter required fields')
 
