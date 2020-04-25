@@ -289,7 +289,7 @@ def filterByPlatform():
         gameList = Games.query.all()
         ListOfGames = []
         for game in gameList:
-            if(game.platform == platform):
+            if(game.platform.lower() == platform.lower()):
                 ListOfGames.append(game)
 
         size = len(ListOfGames)
