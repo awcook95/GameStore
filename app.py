@@ -1,4 +1,4 @@
-from flask import Flask, render_template, request
+from flask import Flask, render_template, request, session
 from flask_sqlalchemy import SQLAlchemy
 from sqlalchemy.orm import sessionmaker
 
@@ -6,6 +6,8 @@ app = Flask(__name__)
 #app.config['SQLALCHEMY_DATABASE_URI'] = 'postgresql://postgres:mangosteen@localhost/GameStore'
 app.config['SQLALCHEMY_DATABASE_URI'] = 'postgresql://postgres:thompson@localhost:5432/New'
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
+app.config['SECRET_KEY'] = 'so secret lol' #needed key for sessions to work
+
 app.debug = True
 db = SQLAlchemy(app)
 
@@ -140,18 +142,31 @@ def tryLogin():
         userLogin = Users.query.all()
         for user in userLogin:
              if (uname == user.uname and pword == user.pword):
-                 return render_template('userMenu.html')
+                 session["user"] = uname
+                 return render_template('userMenu.html', username = session["user"])
 
         employeeLogin = Employees.query.all()
         for emp in employeeLogin:
             if(uname == emp.uname and pword == emp.pword):
-                return render_template('userMenu.html') #edit late to be empMenu
+                session["user"] = uname
+                return render_template('userMenu.html', username = session["user"]) #edit late to be empMenu
 
         return render_template('login.html', message = "Please enter VALID username and password")
 
+
+@app.route('/logout', methods =['POST'])
+def logout():
+
+    session["user"] = ""
+    return render_template('login.html', message = "succesfully logged out")
+
+
 @app.route('/user_menu', methods=['POST'])
 def userMenu():
-    return render_template('userMenu.html')
+    if session["user"] == "":
+        return render_template("login.html", message = "please login")
+    else:
+        return render_template('userMenu.html')
 
 
 
