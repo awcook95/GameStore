@@ -15,15 +15,8 @@
     <p class="message">{{ message | safe }}</p>
     {% endif %}
 
-    <form action="/user_menu" method="POST">
-        <button type="submit">Return to main menu</button>
-    </form>
-    <form action="/game_search" method="POST">
-        <button type="submit">Previous Page</button>
-    </form>
-
       <div class="form-group">
-        <h3>Your Search Results...</h3>
+        <h3>Your Previous Purchases...</h3>
 
 
 
@@ -33,29 +26,18 @@
     <tr style = "text-align: right">
     <tr>
       <th>Title</th>
-      <th>Platform</th>
       <th>Price</th>
-      <th>Publisher<th>
-      <th> Purchase? </th>
+      <th>Address</th>
     </tr>
   </thead>
   <tbody>
-<form action="/purchase_game" method="POST">
     {% for item in listy %}
       <tr>
         <td class ="c1">{{ item.title }} </td>
-        <td class ="c1">{{ item.platform }} </td>
         <td class ="c1">{{ item.price }} </td>
-        <td class ="c1">{{ item.publisher }} <td>
-        <td> <button type="submit" value = {{ item.gid }} name = bought>Purchase Game</button>  </td>
+        <td class ="c1">{{ item.address }} </td>
       </tr>
     {% endfor %}
-
-
   </div>
-</body>
-<body>
-
-</form>
 </body>
 </html>

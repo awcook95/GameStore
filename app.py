@@ -1,6 +1,7 @@
 from flask import Flask, render_template, request, session
 from flask_sqlalchemy import SQLAlchemy
 from sqlalchemy.orm import sessionmaker
+from collections import namedtuple
 
 app = Flask(__name__)
 #app.config['SQLALCHEMY_DATABASE_URI'] = 'postgresql://postgres:mangosteen@localhost/GameStore'
@@ -110,7 +111,7 @@ class WorksAt(db.Model):
         self.eid = gid
         self.sid = sid
 
-class Purchase(db.Model):
+class Purchase(db.Model): #need to Add datePurchased
     __tablename__ = 'purchase'
     pid = db.Column(db.Integer, primary_key=True)
     uid = db.Column(db.Integer)
@@ -144,14 +145,15 @@ def tryLogin():
              if (uname == user.uname and pword == user.pword):
                  session["user"] = uname
                  session["id"] = user.uid
-                 return render_template('userMenu.html', username = session["user"])
+                 return render_template('userMenu.html', username = session["user"], uid = session["id"])
 
         employeeLogin = Employees.query.all()
         for emp in employeeLogin:
             if(uname == emp.uname and pword == emp.pword):
                 session["user"] = uname
                 session["id"] = emp.eid
-                return render_template('userMenu.html', username = session["user"]) #edit late to be empMenu
+                session["rank"] = emp.rank
+                return render_template('empMenu.html', username = session["user"]) #edit late to be empMenu
 
         return render_template('login.html', message = "Please enter VALID username and password")
 
@@ -161,6 +163,7 @@ def logout():
 
     session["user"] = ""
     session["id"] = ""
+    session["rank"] = ""
     return render_template('login.html', message = "succesfully logged out")
 
 
@@ -309,9 +312,52 @@ def filterByPrice():
             return render_template('gameSearch.html', message = 'No games under that Price were found')
 
 
+@app.route('/purchase_game', methods = ['POST'])
+def orderGame():
+    uid = session["id"]
+    gid = request.form['bought']
+    sid = 6 #online store sid
+    purchase = Purchase(uid, gid, sid)
+    db.session.add(purchase)
+    db.session.commit()
+    return render_template('userMenu.html')
 
 
 
+
+@app.route('/view_orders', methods=['POST'])
+def viewOrders():
+    uid = session["id"]
+    listOfPurchases = []
+    #Purchases = Purchase.query.all()
+    #Purchases = Purchase.query.order_by(Purchase.date.desc())
+    Purchases = Purchase.query.order_by(Purchase.gid.desc()) #NEED TO orderbyDatePurchased probably
+    for transaction in Purchases:
+        if(transaction.uid == uid):
+            listOfPurchases.append(transaction)
+
+
+    purchaseInfo = []
+
+
+
+
+    for myTransaction in listOfPurchases:
+        gameList = Games.query.all()
+        for game in gameList:
+            if(game.gid == myTransaction.gid):
+                currentTitle = game.title
+                currentPrice = game.price
+                Stores = Store.query.all()
+                for place in Stores:
+                    if(place.sid == myTransaction.sid):
+                        currentAddress = place.address
+
+        aPurchase = namedtuple("aPurchase", "title price address")
+        thispurchaseInfo = aPurchase(currentTitle, currentPrice, currentAddress)
+        purchaseInfo.append(thispurchaseInfo)
+
+    return render_template("userOrders.html", listy = purchaseInfo)
 
 
 
