@@ -6,6 +6,7 @@ gameSearch = Blueprint("gameSearch", __name__, static_folder='static', static_ur
 def searchgames():
     return render_template('gameSearch.html')
 
+
 @gameSearch.route('/all', methods= ['POST'])
 def filterByAll():
     if request.method == 'POST':
@@ -21,8 +22,6 @@ def filterByAll():
             return render_template('gameSearch.html', message = 'No games By that platform Found')
 
 
-
-
 @gameSearch.route('/by_title', methods= ['POST'])
 def filterByTitle():
     if request.method == 'POST':
@@ -33,7 +32,6 @@ def filterByTitle():
             lowerAttribute = game.title.lower()
             lowerAttribute = lowerAttribute.strip()
             lowerAttribute = lowerAttribute.replace(" ","")
-
 
             lowerUserInput = title.lower()
             lowerUserInput = lowerUserInput.strip()
@@ -49,12 +47,10 @@ def filterByTitle():
             stringy.append(game.title)
             print(game.title)
 
-
         if(size > 0):
             return render_template("gameSearchResults.html", listy = ListOfGames)
         else:
             return render_template('gameSearch.html', message = 'No title By that name Found')
-
 
 
 @gameSearch.route('/by_publisher', methods= ['POST'])
@@ -68,14 +64,11 @@ def filterByPublisher():
             lowerAttribute = lowerAttribute.strip()
             lowerAttribute = lowerAttribute.replace(" ","")
 
-
             lowerUserInput = publisher.lower()
             lowerUserInput = lowerUserInput.strip()
             lowerUserInput = lowerUserInput.replace(" ","")
             if(lowerUserInput in lowerAttribute):
                 ListOfGames.append(game)
-
-
 
         if(len(ListOfGames) > 0):
             return render_template("gameSearchResults.html", listy = ListOfGames)

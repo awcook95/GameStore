@@ -71,7 +71,6 @@ class Store(db.Model):
         self.address = address
 
 
-
 class Reviews(db.Model):
     __tablename__ = 'reviews'
     rid = db.Column(db.Integer, primary_key=True)
@@ -88,6 +87,7 @@ class Reviews(db.Model):
         self.score = score
         self.body = body
 
+
 class Stock(db.Model):
     __tablename__ = 'stock'
     kid = db.Column(db.Integer, primary_key=True)
@@ -101,7 +101,6 @@ class Stock(db.Model):
         self.amount = amount
 
 
-
 class WorksAt(db.Model):
     __tablename__ = 'worksat'
     wid = db.Column(db.Integer, primary_key=True)
@@ -111,6 +110,7 @@ class WorksAt(db.Model):
     def __init__(self, eid, sid):
         self.eid = gid
         self.sid = sid
+
 
 class Purchase(db.Model): #need to Add datePurchased
     __tablename__ = 'purchase'
@@ -125,11 +125,10 @@ class Purchase(db.Model): #need to Add datePurchased
         self.sid = sid
 
 
-
-
 @app.route('/')
 def login():
     return render_template('login.html')
+
 
 @app.route('/try_login', methods=[ 'POST'])
 def tryLogin():
@@ -156,7 +155,6 @@ def tryLogin():
                 store = WorksAt.query.filter(WorksAt.eid == emp.eid).first()
                 session["sid"] = store.sid
 
-
                 return render_template('empMenu.html', username = session["user"], sid = session["sid"]) #edit late to be empMenu
 
         return render_template('login.html', message = "Please enter VALID username and password")
@@ -179,8 +177,6 @@ def userMenu():
         return render_template('userMenu.html')
 
 
-
-
 @app.route('/find_store', methods=['POST'])
 def findStore():
     option = request.form['option']
@@ -195,12 +191,6 @@ def findStore():
         return render_template('findStore.html', stores=stores)
 
 
-
-
-
-
-
-
 @app.route('/purchase_game', methods = ['POST'])
 def orderGame():
     uid = session["id"]
@@ -210,8 +200,6 @@ def orderGame():
     db.session.add(purchase)
     db.session.commit()
     return render_template('userMenu.html')
-
-
 
 
 @app.route('/view_orders', methods=['POST'])
@@ -225,9 +213,7 @@ def viewOrders():
         if(transaction.uid == uid):
             listOfPurchases.append(transaction)
 
-
     purchaseInfo = []
-
 
     totalPrice = 0
     count = 0
@@ -244,8 +230,6 @@ def viewOrders():
                     if(place.sid == myTransaction.sid):
                         currentAddress = place.address
 
-
-
         aPurchase = namedtuple("aPurchase", "title price address")
         thispurchaseInfo = aPurchase(currentTitle, currentPrice, currentAddress)
         purchaseInfo.append(thispurchaseInfo)
@@ -253,12 +237,10 @@ def viewOrders():
     return render_template("userOrders.html", listy = purchaseInfo, count = count, total = totalPrice)
 
 
-
-
-
 @app.route('/create_review', methods=['POST'])
 def createReview():
     return render_template('createReview.html')
+
 
 @app.route('/submit_review', methods=['POST'])
 def submit_review():
@@ -282,6 +264,7 @@ def submit_review():
         db.session.add(review)
         db.session.commit()
         return render_template('review_success.html')
+
 
 if __name__ == "__main__":
     app.run()
