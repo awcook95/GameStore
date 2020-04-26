@@ -1,0 +1,83 @@
+<!doctype html>
+<html>
+    <head>
+        <meta charset="UTF-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <meta http-equiv="X-UA-Compatible" content="ie=edge" />
+        <link rel="stylesheet" href="../static/style.css" />
+        <title>About</title>
+    </head>
+    <body>
+
+      {{message | safe}}
+
+      <form action="/user_menu" method="POST">
+          <button type="submit">Return to main menu</button>
+      </form>
+
+        <h1>Your info</h1>
+
+        {% if User %}
+            <li>Name: {{User.name}}</li>
+            <li>Username: {{User.uname}}</li>
+            <li>Current Email: {{User.email}} <form action="/changeUserEmail" method="POST">
+                <button type="text" name="option" value="all">Change Email</button>
+            </form></li>
+            <li>
+              <form action="/changeUserPassword" method="POST">
+                <button type="text" name="option" value="all">Change Password</button>
+            </form></li>
+        {% endif %}
+
+        {% if changeEmail %}
+        <form action="/changeEmailAddress" method="POST">
+          <div class = "form-group">
+
+          <h1>Change Email Address</h1>
+
+            <h3>Enter current password</h3>
+
+            <input
+                type="text"
+                name="currentPassword"
+                placeholder="Enter your current password"
+            />
+            </div>
+            <div class = "form-group">
+            <h3>Enter new email address</h3>
+            <input
+                type="text"
+                name="newEmailAddress"
+                placeholder="Enter New Email"
+            />
+            </div>
+            <input type="submit" value="Submit" class="btn" />
+        </form>
+        {% endif %}
+
+        {% if changePassword %}
+        <h1>Change Password</h1>
+
+        <form action="/changeUserPasswordConfirm" method="POST">
+          <div class = "form-group">
+            <h3>Enter current password</h3>
+            <input
+                type="text"
+                name="currentPassword"
+                placeholder="Enter current password"
+            />
+            </div>
+            <div class = "form-group">
+            <h3>Enter your new password</h3>
+            <input
+                type="text"
+                name="newPassword"
+                placeholder="Enter your new password"
+            />
+            </div>
+            <input type="submit" value="Submit" class="btn" />
+        </form>
+        {% endif %}
+
+    </body>
+</html>

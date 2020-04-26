@@ -7,8 +7,8 @@ from source.gameSearch import gameSearch
 app = Flask(__name__)
 app.register_blueprint(gameSearch, url_prefix="/game_search")
 
-app.config['SQLALCHEMY_DATABASE_URI'] = 'postgresql://postgres:mangosteen@localhost/GameStore'
-#app.config['SQLALCHEMY_DATABASE_URI'] = 'postgresql://postgres:thompson@localhost:5432/New'
+#app.config['SQLALCHEMY_DATABASE_URI'] = 'postgresql://postgres:mangosteen@localhost/GameStore'
+app.config['SQLALCHEMY_DATABASE_URI'] = 'postgresql://postgres:thompson@localhost:5432/New'
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 app.config['SECRET_KEY'] = 'so secret lol' #needed key for sessions to work
 
@@ -91,6 +91,59 @@ def orderGame():
     db.session.commit()
     return render_template('userMenu.html')
 
+
+@app.route('/about', methods = ['POST'])
+def about():
+    uid = session["id"]
+    user = Users.query.filter(Users.uid == session["id"]).first()
+    return render_template('userAboutPage.html', User = user)
+
+@app.route('/changeUserEmail', methods = ['POST'])
+def changeEmail():
+    user = Users.query.filter(Users.uid == session["id"]).first()
+    return render_template('userAboutPage.html', User = user, changeEmail = True)
+
+
+
+@app.route('/changeEmailAddress', methods = ['POST'])
+def changeEmailConfirm():
+    user = Users.query.filter(Users.uid == session["id"]).first()
+    currentpassword = request.form['currentPassword']
+    newEmail = request.form['newEmailAddress']
+    if(currentpassword == user.pword):
+        theuser = Users.query.filter(Users.uid == session["id"]).first()
+        theuser.email = newEmail
+        db.session.delete(user)
+        db.session.add(user)
+        db.session.commit()
+        return render_template('userAboutPage.html',User = user, message = "Email succesfully changed")
+    else:
+        return render_template('userAboutPage.html',User = user, message = "invalid password", changeEmail = True)
+
+
+
+
+@app.route('/changeUserPasswordConfirm', methods = ['POST'])
+def changePasswordConfirm():
+    user = Users.query.filter(Users.uid == session["id"]).first()
+    currentpassword = request.form['currentPassword']
+    newPassword = request.form['newPassword']
+    if(currentpassword == user.pword):
+        theuser = Users.query.filter(Users.uid == session["id"]).first()
+        theuser.pword = newPassword
+        db.session.delete(user)
+        db.session.add(user)
+        db.session.commit()
+        return render_template('userAboutPage.html',User = user, message = "Password succesfully changed")
+    else:
+        return render_template('userAboutPage.html',User = user, message = "invalid password", changeEmail = True)
+
+
+
+@app.route('/changeUserPassword', methods = ['POST'])
+def changePassword():
+    user = Users.query.filter(Users.uid == session["id"]).first()
+    return render_template('userAboutPage.html', User = user, changePassword = True)
 
 @app.route('/view_orders', methods=['POST'])
 def viewOrders():
