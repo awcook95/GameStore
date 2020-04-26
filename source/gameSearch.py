@@ -1,4 +1,5 @@
-from flask import Blueprint, render_template
+from flask import Blueprint, render_template, request
+from source.models import Games
 
 gameSearch = Blueprint("gameSearch", __name__, static_folder='static', static_url_path='../static', template_folder='templates')
 
