@@ -10,6 +10,11 @@
     <body>
 
       {{message | safe}}
+
+      <form action="/user_menu" method="POST">
+          <button type="submit">Return to main menu</button>
+      </form>
+
         <h1>Your info</h1>
 
         {% if User %}
