@@ -45,7 +45,7 @@ def tryLogin():
                 store = WorksAt.query.filter(WorksAt.eid == emp.eid).first()
                 session["sid"] = store.sid
 
-                return render_template('empMenu.html', username = session["user"], sid = session["sid"]) #edit late to be empMenu
+                return render_template('empMenu.html', username = session["user"], sid = session["sid"], rank = session["rank"]) #edit late to be empMenu
 
         return render_template('login.html', message = "Please enter VALID username and password")
 
@@ -66,6 +66,12 @@ def userMenu():
     else:
         return render_template('userMenu.html')
 
+@app.route('/emp_menu', methods=['POST'])
+def empMenu():
+    if session["user"] == "":
+        return render_template("login.html", message = "please login")
+    else:
+        return render_template('empMenu.html')
 
 @app.route('/find_store', methods=['POST'])
 def findStore():
@@ -207,6 +213,19 @@ def submit_review():
         db.session.add(review)
         db.session.commit()
         return render_template('review_success.html')
+
+@app.route('/store_info', methods = ['POST'])
+def storeinfor():
+    store = Store.query.filter(Store.sid == session["sid"]).first()
+    employeeList = WorksAt.query.filter(WorksAt.sid == store.sid)
+    employeesObject = []
+    for emp in employeeList:
+        employeesObject.append(Employees.query.filter(Employees.eid == emp.eid).order_by(Employees.rank.asc()).first())
+
+    address = store.address
+
+    return render_template('storeInfo.html', Employees = employeesObject, address = address)
+
 
 
 if __name__ == "__main__":

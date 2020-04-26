@@ -1,0 +1,39 @@
+<!doctype html>
+<html>
+    <head>
+        <meta charset="UTF-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <meta http-equiv="X-UA-Compatible" content="ie=edge" />
+        <link rel="stylesheet" href="../static/style.css" />
+        <title>About</title>
+    </head>
+    <body>
+
+      {{message | safe}}
+
+      <form action="/emp_menu" method="POST">
+          <button type="submit">Return to main menu</button>
+      </form>
+
+        <h1>Store Info</h1>
+
+        <h3> Address: {{address}} </h3>
+
+        {% if Employees %}
+        <table border = "1" class = "dataframe">
+          <thead>
+            <tr style = "text-align: right">
+            <tr>
+              <th>Name</th>
+              <th>Position</th>
+            </tr>
+          </thead>
+          <tbody>
+        <form action="/purchase_game" method="POST">
+            {% for employee in Employees %}
+              <tr>
+                <td class ="c3">{{ employee.name }} </td>
+                <td class ="c3">{{ employee.rank }} </td>
+
+            {% endfor %}
+            {% endif %}
