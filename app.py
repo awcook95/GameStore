@@ -215,7 +215,7 @@ def submit_review():
         return render_template('review_success.html')
 
 @app.route('/store_info', methods = ['POST'])
-def storeinfor():
+def storeinfo():
     store = Store.query.filter(Store.sid == session["sid"]).first()
     employeeList = WorksAt.query.filter(WorksAt.sid == store.sid)
     employeesObject = []
@@ -225,6 +225,157 @@ def storeinfor():
     address = store.address
 
     return render_template('storeInfo.html', Employees = employeesObject, address = address)
+
+
+
+@app.route('/check_stock', methods = ['POST'])
+def checkStock():
+    return render_template("checkStock.html")
+
+@app.route('/complete_purchase', methods = ['POST'])
+def purchaseSearch():
+    return render_template('employeeGameSearch.html')
+
+@app.route('/user_to_purchase',methods = ['POST'])
+def userToPurchase():
+    session["gameToBePurchased"] = request.form['bought']
+    gid = request.form['bought']
+    currentGame = Games.query.filter(Games.gid == gid).first()
+    session["currentGame"] = gid
+    print(gid)
+    return render_template("finalizePurchase.html", game = currentGame )
+
+@app.route('/purchase_game_withoutID', methods = ['POST'])
+def removeFromStock():
+
+    gid = session["currentGame"]
+    Stocky = Stock.query.filter(Stock.gid == gid, Stock.sid == session["sid"]).first()
+    Stocky.amount = Stock.amount - 1
+    db.session.delete(Stocky)
+    db.session.add(Stocky)
+    db.session.commit()
+
+    return render_template("empMenu.html", message = "Purchase Completed")
+
+@app.route('/purchase_game_withID', methods = ['POST'])
+def withID():
+    Game = Games.query.filter(Games.gid == session["currentGame"]).first()
+    userExists = True
+    return render_template("finalizePurchase.html", game = Game, userExists = userExists  )
+
+@app.route('/finalize_purchase_withID', methods = ['POST'])
+def finalizeIDPurchase():
+    username = request.form['username']
+
+     #online store sid
+
+    uid = 0
+
+    allUsers = Users.query.all()
+
+    for user in allUsers:
+        if(user.uname == username):
+            uid = user.uid
+
+    Game = Games.query.filter(Games.gid == session["currentGame"]).first()
+    userExists = True
+
+    if(uid == 0):
+        return render_template("finalizePurchase.html", game = Game, userExists = userExists, message = "No such username exists")
+
+    sid = session["sid"]
+    gid = session["currentGame"]
+    Stocky = Stock.query.filter(Stock.gid == gid, Stock.sid == session["sid"]).first()
+    Stocky.amount = Stock.amount - 1
+    db.session.delete(Stocky)
+    db.session.add(Stocky)
+    db.session.commit()
+
+    purchase = Purchase(uid, gid, sid)
+    db.session.add(purchase)
+    db.session.commit()
+
+
+    return render_template("empMenu.html", message = "Purchase Completed")
+
+
+@app.route('/check_stock/view', methods= ['POST'])
+def viewStock():
+    if request.method == 'POST':
+        title = request.form['title']
+        ListOfGames = []
+        gameList = Games.query.all()
+        for game in gameList:
+            lowerAttribute = game.title.lower()
+            lowerAttribute = lowerAttribute.strip()
+            lowerAttribute = lowerAttribute.replace(" ","")
+
+            lowerUserInput = title.lower()
+            lowerUserInput = lowerUserInput.strip()
+            lowerUserInput = lowerUserInput.replace(" ","")
+            if(lowerUserInput in lowerAttribute):
+                ListOfGames.append(game)
+
+        size = len(ListOfGames)
+
+        stringy = []
+        stockList = Stock.query.filter(Stock.sid == session["sid"])
+        #stock = Store.query.all()
+
+        for game in ListOfGames:
+            for stock in stockList:
+                if(game.gid == stock.gid):
+                    game.stock = stock.amount
+
+
+
+        if(size > 0):
+            return render_template("checkStockView.html", listy = ListOfGames)
+        else:
+            return render_template('checkStock.html', message = 'No title By that name Found')
+
+
+
+
+
+
+
+@app.route('/game_search/by_title/emp', methods= ['POST'])
+def filterByTitleEmp():
+    if request.method == 'POST':
+        title = request.form['title']
+        ListOfGames = []
+        gameList = Games.query.all()
+        for game in gameList:
+            lowerAttribute = game.title.lower()
+            lowerAttribute = lowerAttribute.strip()
+            lowerAttribute = lowerAttribute.replace(" ","")
+
+            lowerUserInput = title.lower()
+            lowerUserInput = lowerUserInput.strip()
+            lowerUserInput = lowerUserInput.replace(" ","")
+            if(lowerUserInput in lowerAttribute):
+                ListOfGames.append(game)
+
+        size = len(ListOfGames)
+
+        stringy = []
+        stockList = Stock.query.filter(Stock.sid == session["sid"])
+        #stock = Store.query.all()
+
+        for game in ListOfGames:
+            for stock in stockList:
+                if(game.gid == stock.gid):
+                    game.stock = stock.amount
+
+
+
+        if(size > 0):
+            return render_template("gameSearchResultsEmp.html", listy = ListOfGames)
+        else:
+            return render_template('employeeGameSearch.html', message = 'No title By that name Found')
+
+
 
 
 

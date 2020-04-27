@@ -1,0 +1,53 @@
+<!doctype html>
+<html>
+    <head>
+        <meta charset="UTF-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <meta http-equiv="X-UA-Compatible" content="ie=edge" />
+        <link rel="stylesheet" href="../static/style.css" />
+        <title>About</title>
+    </head>
+    <body>
+
+      {{message | safe}}
+      <form action="/emp_menu" method="POST">
+          <button type="submit">Return to main menu</button>
+      </form>
+
+        <h1>Finalizing Purchase</h1>
+
+        <h3> Purchasing {{game.title}}  </h3>
+
+        <form action="/purchase_game_withoutID" method="POST">
+            <button type="submit">Purchase with non registered User</button>
+        </form>
+
+
+        {% if userExists != True %}
+        <form action="/purchase_game_withID" method="POST">
+            <button type="submit">Purchase with registered User</button>
+        </form>
+
+        {% endif %}
+
+        {% if userExists %}
+        <form action="/finalize_purchase_withID" method="POST">
+          <div class = "form-group">
+
+          <h1>Enter custome username</h1>
+
+
+            <input
+                type="text"
+                name="username"
+                placeholder="Enter customer username"
+            />
+            </div>
+            <input type="submit" value="Submit" class="btn" />
+        </form>
+
+
+        {% endif %}
+
+    </body>
+</html>

@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta http-equiv="X-UA-Compatible" content="ie=edge" />
+    <link rel="stylesheet" href="../static/style.css" />
+    <title>Please Enter Your Review</title>
+  </head>
+  <body>
+
+
+    <div class="container">
+      {% if message %}
+      <p class="message">{{ message | safe }}</p>
+      {% endif %}
+
+      <form action="/emp_menu" method="POST">
+          <button type="submit">Return to main menu</button>
+      </form>
+
+      <form action="game_search/by_title/emp" method="POST">
+        <div class="form-group">
+          <h3>Search By Title</h3>
+          <input
+            type="text"
+            name="title"
+            placeholder="Title.."
+          />
+        </div>
+        <input type="submit" value="Submit" class="btn" />
+        </form>
+
+
+    </body>
+
+
+
+</html>
