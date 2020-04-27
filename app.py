@@ -186,9 +186,68 @@ def viewOrders():
     return render_template("userOrders.html", listy = purchaseInfo, count = count, total = totalPrice)
 
 
+@app.route('/return_games/user', methods=['POST'])
+def finalizeReturn():
+    username = request.form['username']
+    session["currentCustomer"] = username
+
+
+    uid = 0
+
+    allUsers = Users.query.all()
+
+    for user in allUsers:
+        if(user.uname == username):
+            uid = user.uid
+
+    Game = Games.query.filter(Games.gid == session["currentGame"]).first()
+    userExists = True
+
+    if(uid == 0):
+        return render_template("returnGame.html",  message = "No such username exists")
+
+
+
+
+    listOfPurchases = []
+    #Purchases = Purchase.query.all()
+    #Purchases = Purchase.query.order_by(Purchase.date.desc())
+    Purchases = Purchase.query.order_by(Purchase.gid.desc()) #NEED TO orderbyDatePurchased probably
+    for transaction in Purchases:
+        if(transaction.uid == uid):
+            listOfPurchases.append(transaction)
+
+    purchaseInfo = []
+
+    totalPrice = 0
+    count = 0
+    for myTransaction in listOfPurchases:
+        gameList = Games.query.all()
+        for game in gameList:
+            if(game.gid == myTransaction.gid):
+                currentTitle = game.title
+                currentPrice = game.price
+                currentGID = game.gid
+                totalPrice+= currentPrice
+                count+=1
+                Stores = Store.query.all()
+                for place in Stores:
+                    if(place.sid == myTransaction.sid):
+                        currentAddress = place.address
+                        currentSID = place.sid
+
+        aPurchase = namedtuple("aPurchase", "title price address gid sid")
+        thispurchaseInfo = aPurchase(currentTitle, currentPrice, currentAddress, currentGID, currentSID)
+        purchaseInfo.append(thispurchaseInfo)
+
+    return render_template("returnGameFinal.html", listy = purchaseInfo, count = count, total = totalPrice, username = username)
+
 @app.route('/create_review', methods=['POST'])
 def createReview():
     return render_template('createReview.html')
+
+
+
 
 
 @app.route('/submit_review', methods=['POST'])
@@ -336,9 +395,49 @@ def viewStock():
 
 
 
+@app.route('/return_games', methods = ['POST'])
+def returnGames():
+    #session["currentUsername"] = request.form['username']
+    return render_template('returnGame.html')
+
+@app.route('/complete_return', methods = ['POST'])
+def completeReturn():
+    username = session["currentCustomer"]
+    gid = request.form['return']
+    sid = request.form['return_store']
+    #sid = object.sid
+    #gid = object.gid
+    #address = request.form['return']
+    #sid = session["sid"]
+    #print(address)
+
+    User = Users.query.filter(Users.uname == username).first()
+
+    uid = User.uid
+    Game = Games.query.filter(Games.gid == gid).first()
+    store =  Store.query.filter(Store.sid == sid).first()
+
+    Stocky = Stock.query.filter(Stock.gid == gid, Stock.sid == session["sid"]).first()
+    Stocky.amount = Stocky.amount + 1
+
+    db.session.delete(Stocky)
+    db.session.add(Stocky)
+    print(uid, gid, sid)
+    purchase = Purchase.query.filter(Purchase.gid == gid, Purchase.uid == uid, Purchase.sid == sid).first()
+    #db.session.delete(purchase)
 
 
 
+    db.session.commit()
+    #print(store.address)
+    #print(User.uname)
+###lol
+
+
+
+    #purchase = Purchase(uid, gid, sid)
+
+    return render_template('empMenu.html', message = "Return Successfully Completed")
 
 @app.route('/game_search/by_title/emp', methods= ['POST'])
 def filterByTitleEmp():

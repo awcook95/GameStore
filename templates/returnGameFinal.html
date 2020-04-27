@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta http-equiv="X-UA-Compatible" content="ie=edge" />
+  <link rel="stylesheet" href="../static/style.css" />
+  <title>Search Results</title>
+</head>
+<body>
+
+
+
+
+  <div class="container">
+    {% if message %}
+    <p class="message">{{ message | safe }}</p>
+    {% endif %}
+
+      <div class="form-group">
+        <h3> Previous Purchases of {{username}}...</h3>
+
+
+
+
+<table border = "1" class = "dataframe">
+  <thead>
+    <tr style = "text-align: right">
+    <tr>
+      <th>Title</th>
+      <th>Price</th>
+      <th>Address</th>
+      <th>Return></th>
+    </tr>
+  </thead>
+
+  <tbody>
+    <form action = "/complete_return" method = "POST">
+    {% for item in listy %}
+      <tr>
+        <td class ="c1">{{ item.title }} </td>
+        <td class ="c1">{{ item.price }} </td>
+        <td class ="c1">{{ item.address }} </td>
+      <input type="hidden" name="return_store" value= {{ item.sid }} >
+        <td> <button type="submit" value = {{ item.gid }} name = return>Return</button>  </td>
+      </tr>
+
+    {% endfor %}
+      </form>
+  </div>
+<h3>Number of Games Owned: {{count|safe}}</h3>
+
+<h3>Money Spent to Date: {{total|safe}}</h3>
+
+<form action="/emp_menu" method="POST">
+    <button type="submit">Return to main menu</button>
+</form>
+
+</body>
+</html>
