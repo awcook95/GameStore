@@ -3,12 +3,14 @@ from sqlalchemy.orm import sessionmaker
 from collections import namedtuple
 from source.models import db, Users, Games, Employees, Store, Reviews, Stock, WorksAt, Purchase
 from source.gameSearch import gameSearch
+from source.viewReviews import viewReviews
 
 app = Flask(__name__)
 app.register_blueprint(gameSearch, url_prefix="/game_search")
+app.register_blueprint(viewReviews, url_prefix="/view_reviews")
 
-#app.config['SQLALCHEMY_DATABASE_URI'] = 'postgresql://postgres:mangosteen@localhost/GameStore'
-app.config['SQLALCHEMY_DATABASE_URI'] = 'postgresql://postgres:thompson@localhost:5432/New'
+app.config['SQLALCHEMY_DATABASE_URI'] = 'postgresql://postgres:mangosteen@localhost/GameStore'
+#app.config['SQLALCHEMY_DATABASE_URI'] = 'postgresql://postgres:thompson@localhost:5432/New'
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 app.config['SECRET_KEY'] = 'so secret lol' #needed key for sessions to work
 
