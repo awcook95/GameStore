@@ -1,0 +1,54 @@
+<!doctype html>
+<html>
+    <head>
+        <meta charset="UTF-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <meta http-equiv="X-UA-Compatible" content="ie=edge" />
+        <link rel="stylesheet" href="../static/style.css" />
+        <title>Transfer Employee</title>
+    </head>
+    <body>
+      <div class="form-group">
+      <h3> What store do you want to transfer {{employee.name}} to? </h3>
+
+
+
+
+
+
+
+      <table border = "1" class = "dataframe">
+        <thead>
+          <tr style = "text-align: right">
+          <tr>
+            <th>Store</th>
+            <th>Address</th>
+            <th>Confirm</th>
+          </tr>
+        </thead>
+        <tbody>
+      <form action="/finish_Transfer" method="POST">
+        <input type = "hidden" name = eid value = {{employee.eid}} />
+          {% for store in stores %}
+            <tr>
+              {% if store.sid != 6 %}
+              {% if store.sid != currentStore %}
+              <td class ="c1">{{ store.sid }} </td>
+              <td class ="c1">{{ store.address }} </td>
+
+
+              <td> <button type="submit" value = {{ store.sid }} name = store>Confirm Transfer</button>  </td>
+              {% endif %}
+              {% endif %}
+            </tr>
+
+          {% endfor %}
+
+          {% if check %}
+          <h3> lolll </h3>
+          {% endif %}
+
+
+
+      </body>
+</html>

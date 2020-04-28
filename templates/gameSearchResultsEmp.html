@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta http-equiv="X-UA-Compatible" content="ie=edge" />
+  <link rel="stylesheet" href="../static/style.css" />
+  <title>Search Results</title>
+</head>
+<body>
+
+
+  <div class="container">
+    {% if message %}
+    <p class="message">{{ message | safe }}</p>
+    {% endif %}
+
+    <form action="/emp_menu" method="POST">
+        <button type="submit">Return to main menu</button>
+    </form>
+    <form action="/complete_purchase" method="POST">
+        <button type="submit">Previous Page</button>
+    </form>
+
+      <div class="form-group">
+        <h3>Your Search Results...</h3>
+
+
+
+
+<table border = "1" class = "dataframe">
+  <thead>
+    <tr style = "text-align: right">
+    <tr>
+      <th>Title</th>
+      <th>Platform</th>
+      <th>Price</th>
+      <th>Publisher<th>
+        <th>Stock<th>
+      <th> Purchase? </th>
+    </tr>
+  </thead>
+  <tbody>
+<form action="/user_to_purchase" method="POST">
+    {% for item in listy %}
+      <tr>
+        <td class ="c1">{{ item.title }} </td>
+        <td class ="c1">{{ item.platform }} </td>
+        <td class ="c1">{{ item.price }} </td>
+        <td class ="c1">{{ item.publisher }} <td>
+        <td class ="c1">{{ item.stock }} <td>
+          {% if item.stock>0 %}
+        <td> <button type="submit" value = {{ item.gid }} name = bought>Purchase Game</button>  </td>
+          {% endif %}
+      </tr>
+    {% endfor %}
+
+
+  </div>
+</body>
+<body>
+
+</form>
+</body>
+</html>
