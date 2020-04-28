@@ -1,5 +1,6 @@
 from flask import Flask, render_template, request, session
 from sqlalchemy.orm import sessionmaker
+from sqlalchemy.sql import func
 from collections import namedtuple
 from source.models import db, Users, Games, Employees, Store, Reviews, Stock, WorksAt, Purchase
 from source.gameSearch import gameSearch
@@ -154,26 +155,29 @@ def changePassword():
 @app.route('/view_orders', methods=['POST'])
 def viewOrders():
     uid = session["id"]
-    listOfPurchases = []
-    #Purchases = Purchase.query.all()
-    #Purchases = Purchase.query.order_by(Purchase.date.desc())
-    Purchases = Purchase.query.order_by(Purchase.gid.desc()) #NEED TO orderbyDatePurchased probably
-    for transaction in Purchases:
-        if(transaction.uid == uid):
-            listOfPurchases.append(transaction)
+
+
+    listOfPurchases = Purchase.query.filter(Purchase.uid == uid).order_by(Purchase.gid.desc()) #NEED TO orderbyDatePurchased probably
 
     purchaseInfo = []
 
-    totalPrice = 0
-    count = 0
+    List1 = Games.query.join(Purchase, Games.gid == Purchase.gid).filter(Purchase.uid == uid).order_by(Purchase.gid.asc()).all()
+
+    #Query for previous Purchases but renaming is weird -\o/-
+    #List2 = db.session.query(Games, Purchase, Store).filter(Games.gid == Purchase.gid).filter(Purchase.uid == uid).filter(Purchase.sid == Store.sid).all()
+
+    #query for count
+    Counter = Games.query.join(Purchase, Games.gid == Purchase.gid).filter(Purchase.uid == uid).count()
+
+    #query for sum
+    sum = db.session.query(func.sum(Games.price).label('sum')).join(Purchase, Games.gid == Purchase.gid).filter(Purchase.uid == uid).first()
+
     for myTransaction in listOfPurchases:
         gameList = Games.query.all()
         for game in gameList:
             if(game.gid == myTransaction.gid):
                 currentTitle = game.title
                 currentPrice = game.price
-                totalPrice+= currentPrice
-                count+=1
                 Stores = Store.query.all()
                 for place in Stores:
                     if(place.sid == myTransaction.sid):
@@ -183,7 +187,7 @@ def viewOrders():
         thispurchaseInfo = aPurchase(currentTitle, currentPrice, currentAddress)
         purchaseInfo.append(thispurchaseInfo)
 
-    return render_template("userOrders.html", listy = purchaseInfo, count = count, total = totalPrice)
+    return render_template("userOrders.html", listy = purchaseInfo, count = Counter, total = sum.sum)
 
 
 @app.route('/return_games/user', methods=['POST'])
@@ -525,7 +529,7 @@ def completeReturn():
     db.session.add(Stocky)
     print(uid, gid, sid)
     purchase = Purchase.query.filter(Purchase.gid == gid, Purchase.uid == uid, Purchase.sid == sid).first()
-    #db.session.delete(purchase)
+    db.session.delete(purchase)
 
 
 
