@@ -3,11 +3,9 @@ from sqlalchemy.orm import sessionmaker
 from collections import namedtuple
 from source.models import db, Users, Games, Employees, Store, Reviews, Stock, WorksAt, Purchase
 from source.gameSearch import gameSearch
-from source.viewReviews import viewReviews
 
 app = Flask(__name__)
 app.register_blueprint(gameSearch, url_prefix="/game_search")
-app.register_blueprint(viewReviews, url_prefix="/view_reviews")
 
 app.config['SQLALCHEMY_DATABASE_URI'] = 'postgresql://postgres:mangosteen@localhost/GameStore'
 #app.config['SQLALCHEMY_DATABASE_URI'] = 'postgresql://postgres:thompson@localhost:5432/New'
@@ -579,7 +577,11 @@ def filterByTitleEmp():
         else:
             return render_template('employeeGameSearch.html', message = 'No title By that name Found')
 
-
+@app.route('/view_reviews', methods= ['POST'])
+def searchgames():
+    reviewList = Reviews.query.all()
+    #reviewList = db.session.query(Reviews, Users).filter(Reviews.uid == Users.uid).all()
+    return render_template('viewReviews.html', reviewList = reviewList)
 
 
 
