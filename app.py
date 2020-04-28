@@ -95,7 +95,7 @@ def orderGame():
     purchase = Purchase(uid, gid, sid)
     db.session.add(purchase)
     db.session.commit()
-    return render_template('userMenu.html')
+    return render_template('orderComplete.html')
 
 
 @app.route('/about', methods = ['POST'])
@@ -580,9 +580,8 @@ def filterByTitleEmp():
 @app.route('/view_reviews', methods= ['POST'])
 def searchgames():
     reviewList = Reviews.query.all()
-    #reviewList = db.session.query(Reviews, Users).filter(Reviews.uid == Users.uid).all()
+    #reviewList = db.session.query(Reviews, Users).join(Reviews, Reviews.uid == Users.uid).all()
     return render_template('viewReviews.html', reviewList = reviewList)
-
 
 
 if __name__ == "__main__":
