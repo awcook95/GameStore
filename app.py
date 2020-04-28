@@ -71,7 +71,7 @@ def empMenu():
     if session["user"] == "":
         return render_template("login.html", message = "please login")
     else:
-        return render_template('empMenu.html')
+        return render_template('empMenu.html', rank = session["rank"])
 
 @app.route('/find_store', methods=['POST'])
 def findStore():
@@ -389,7 +389,7 @@ def viewStock():
 
 
         if(size > 0):
-            return render_template("checkStockView.html", listy = ListOfGames)
+            return render_template("checkStockView.html", listy = ListOfGames, rank = session["rank"])
         else:
             return render_template('checkStock.html', message = 'No title By that name Found')
 
@@ -399,6 +399,107 @@ def viewStock():
 def returnGames():
     #session["currentUsername"] = request.form['username']
     return render_template('returnGame.html')
+
+@app.route('/order_more', methods = ['POST'])
+def orderMore():
+    gid = request.form["bought"]
+    sid = session["id"]
+
+    amount = request.form["amount"]
+
+    if(amount == "" ):
+        return render_template("empMenu.html", message = "Order failed, please enter a number greater than 0 in the text field", rank = session["rank"] )
+
+    amount = int(amount)
+
+    if(amount < 1):
+        return render_template("empMenu.html", message = "Order failed, please enter a number greater than 0 in the text field", rank = session["rank"] )
+
+
+    Stocky = Stock.query.filter(Stock.gid == gid, Stock.sid == session["sid"]).first()
+    Stocky.amount = Stocky.amount + amount
+
+
+        #print("lol")
+    db.session.delete(Stocky)
+    db.session.add(Stocky)
+    db.session.commit()
+
+
+    return render_template("empMenu.html", message = "Order succesful", rank = session["rank"] )
+
+@app.route('/edit_employee', methods = ['POST'])
+def editEmployee():
+
+    store = Store.query.filter(Store.sid == session["sid"]).first()
+    employeeList = WorksAt.query.filter(WorksAt.sid == store.sid)
+    employeesObject = []
+    for emp in employeeList:
+        employeesObject.append(Employees.query.filter(Employees.eid == emp.eid).order_by(Employees.rank.asc()).first())
+
+    address = store.address
+
+    #return render_template('storeInfo.html', Employees = employeesObject, address = address)
+
+
+    return render_template("editEmployee.html", Employees = employeesObject, address = address )
+
+@app.route('/transfer_emp', methods = ['POST'])
+def transferEmployee():
+    eid = request.form["transfer"]
+    Employee = Employees.query.filter(Employees.eid == eid).first()
+
+    Stores = Store.query.all()
+
+    return render_template('transferEmployee.html', employee = Employee, stores = Stores, currentStore = session["sid"] )
+
+@app.route('/finish_Transfer',methods = ['POST'])
+def finishTransfer():
+    sid = request.form['store']
+    eid = request.form['eid']
+
+    #Employee = Employees.query.filter(Employees.eid == eid).first()
+    worksAt = WorksAt.query.filter(WorksAt.eid == eid, WorksAt.sid == session["sid"]).first()
+
+    worksAt2 = worksAt
+    worksAt2.sid = sid
+
+    db.session.delete(worksAt)
+    db.session.add(worksAt2)
+    db.session.commit()
+
+    return render_template("empMenu.html", rank = "M")
+
+
+
+@app.route('/terminate_emp', methods = ['POST'])
+def terminateEmployee():
+    eid = request.form["terminate"]
+    store = Store.query.filter(Store.sid == session["sid"]).first()
+    Employee = Employees.query.filter(Employees.eid == eid).first()
+    employeeList = WorksAt.query.filter(WorksAt.sid == store.sid)
+    employeesObject = []
+    for emp in employeeList:
+        employeesObject.append(Employees.query.filter(Employees.eid == emp.eid).order_by(Employees.rank.asc()).first())
+
+    address = store.address
+    return render_template('editEmployee.html', Employees = employeesObject, employee = Employee, address = address, check = True )
+
+@app.route('/finalize_termination', methods = ['POST'])
+def finalizeTermination():
+    eid = request.form['Terminate']
+    sid = session["sid"]
+
+    worksAt = WorksAt.query.filter(WorksAt.sid == sid, WorksAt.eid == eid).first()
+    employee = Employees.query.filter(Employees.eid == eid).first()
+
+    db.session.delete(worksAt)
+    db.session.delete(employee)
+
+    db.session.commit()
+
+    return render_template("empMenu.html", rank = session["rank"])
+
 
 @app.route('/complete_return', methods = ['POST'])
 def completeReturn():
@@ -438,6 +539,8 @@ def completeReturn():
     #purchase = Purchase(uid, gid, sid)
 
     return render_template('empMenu.html', message = "Return Successfully Completed")
+
+
 
 @app.route('/game_search/by_title/emp', methods= ['POST'])
 def filterByTitleEmp():

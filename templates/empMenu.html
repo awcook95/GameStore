@@ -14,6 +14,8 @@
 {{sid | safe}}
 {{rank}}
 
+
+
         <h1>Employee Navigation Menu</h1>
         <form action="/store_info" method="POST">
             <button type="submit" name="option" value="">Info for your Store</button>
@@ -22,7 +24,7 @@
             <button type="submit">Complete a game Purchase</button>
         </form>
         <form action="/check_stock" method="POST">
-            <button type="submit">Check stock for your store</button>
+            <button type="submit">Check stock for your store </button>
         </form>
         <form action="/return_games" method="POST">
             <button type="submit">Complete a Return</button>
@@ -30,18 +32,16 @@
 
         {% if rank == "M" %}
 
-        <form action="/order_stock" method="POST">
-            <button type="submit">Order games for your Store</button>
-        </form>
-        <form action="/terminate_employee" method="POST">
-            <button type="submit">Terminate an employee</button>
-        </form>
-        <form action="/transfer_employee" method="POST">
-            <button type="submit">Transfer Employee to another Store</button>
+        <form action="/edit_employee" method="POST">
+            <button type="submit">Terminate or Transfer an employee</button>
         </form>
 
+
+
+
+
         {% endif %}
-        
+
         <form action="/logout" method="POST">
             <button type="submit">Log Out</button>
         </form>

@@ -37,10 +37,20 @@
       <th>Price</th>
       <th>Publisher<th>
         <th>Stock<th>
+          {% if rank == "M" %}
+          <th> Order More? <th>
+
+            {% endif %}
     </tr>
+    <form action="/order_more" method="POST">
+      {% if rank == "M" %}
+    <h2> Enter amount to Order Below: <h2>
+  <input type="input" name="amount" placeholder="# to order" > </input>
+      {% endif %}
   </thead>
   <tbody>
-<form action="/user_to_purchase" method="POST">
+
+
     {% for item in listy %}
       <tr>
         <td class ="c1">{{ item.title }} </td>
@@ -48,9 +58,11 @@
         <td class ="c1">{{ item.price }} </td>
         <td class ="c1">{{ item.publisher }} <td>
         <td class ="c1">{{ item.stock }} <td>
-          {% if check %}
-        <td> <button type="submit" value = {{ item.gid }} name = bought>Order More</button>  </td>
+          {% if rank == "M" %}
+        <td> <button type="submit" value = {{ item.gid }} name = bought>Order More</button>  <td>
+
           {% endif %}
+
       </tr>
     {% endfor %}
 
