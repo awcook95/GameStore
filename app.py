@@ -7,8 +7,8 @@ from source.gameSearch import gameSearch
 app = Flask(__name__)
 app.register_blueprint(gameSearch, url_prefix="/game_search")
 
-app.config['SQLALCHEMY_DATABASE_URI'] = 'postgresql://postgres:mangosteen@localhost/GameStore'
-#app.config['SQLALCHEMY_DATABASE_URI'] = 'postgresql://postgres:thompson@localhost:5432/New'
+#app.config['SQLALCHEMY_DATABASE_URI'] = 'postgresql://postgres:mangosteen@localhost/GameStore'
+app.config['SQLALCHEMY_DATABASE_URI'] = 'postgresql://postgres:thompson@localhost:5432/New'
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 app.config['SECRET_KEY'] = 'so secret lol' #needed key for sessions to work
 
@@ -580,9 +580,29 @@ def filterByTitleEmp():
 @app.route('/view_reviews', methods= ['POST'])
 def searchgames():
     reviewList = Reviews.query.all()
+
+    users = Users.query.all()
+
+    #reviewList0 = reviewList.union(users)
+    reviewList0 = []
+
+
+    #reviewListO = []
+    for review in reviewList:
+        for user in users:
+            if(user.uid == review.uid):
+                uid = review.uid
+                title = review.title
+                score = review.score
+                body = review.body
+                uname = user.uname
+                aReview = namedtuple("aReview", "uid title score body uname")
+                reviewObject = aReview(uid, title, score, body, uname)
+                reviewList0.append(reviewObject)
+
     #reviewList = db.session.query(Reviews, Users).join(Reviews, Reviews.uid == Users.uid).all()
-    return render_template('viewReviews.html', reviewList = reviewList)
+    return render_template('viewReviews.html', reviewList = reviewList0)
 
 
 if __name__ == "__main__":
-    app.run()
+    app.run(debug = True)
