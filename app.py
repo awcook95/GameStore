@@ -525,7 +525,7 @@ def completeReturn():
     db.session.add(Stocky)
     print(uid, gid, sid)
     purchase = Purchase.query.filter(Purchase.gid == gid, Purchase.uid == uid, Purchase.sid == sid).first()
-    #db.session.delete(purchase)
+    db.session.delete(purchase)
 
 
 
@@ -538,7 +538,7 @@ def completeReturn():
 
     #purchase = Purchase(uid, gid, sid)
 
-    return render_template('empMenu.html', message = "Return Successfully Completed")
+    return render_template('empMenu.html', message = "Return Successfully Completed", rank = "M")
 
 
 
